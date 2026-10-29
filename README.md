@@ -1,7 +1,7 @@
 # Dashy for LazyCat
 
 - Upstream: https://github.com/Lissy93/dashy
-- Package: `community.lazycat.app.dashy`, initial version 4.9.0.
+- Package: `community.lazycat.app.dashy`, first community release 4.9.8.
 - Image: `ghcr.io/lissy93/dashy` delivered through `ghcr.1ms.run` with digest verification.
 - Target: Linux amd64. Minimum LazyCat OS: 1.6.0 for service `run_as` and persistent owner mapping.
 - Persistent data: `/lzcapp/var/user-data` mounted at `/app/user-data`.
@@ -11,7 +11,7 @@
 - No file-chooser interception and no `public_path` bypass. Dashboard configuration is shared across users who can access the app.
 - Only MiaoMiao community publication is permitted; official-store publication is disabled.
 
-The GitHub workflow smoke-tests the pinned upstream image with a writable UID-1000 data directory, verifies HTTP and upstream health check, and checks config survival across restart. Initial store publication is disabled until these tests and LPK build pass.
+The GitHub workflow smoke-tests the pinned upstream image with a writable UID-1000 data directory, verifies HTTP and upstream health check, and checks config survival across restart. Community publication was enabled after the initial build checks. Run 40823997682 tested the actual 4.9.8 image and published the verified versioned LPK; store application ID 653 is APPROVED, category HomePage (33). LPK SHA256: 89310e5fbbc8feb1983191fdea0df7d13fef0c6f394854cefcb99e41147f4aae.
 
 This is not a LazyCat-device installation test or a complete browser/widget integration test. Dashy's visual editor and third-party widgets have not been end-to-end tested on a LazyCat device.
 
