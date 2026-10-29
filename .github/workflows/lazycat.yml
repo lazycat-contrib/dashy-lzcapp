@@ -18,7 +18,7 @@ jobs:
       - name: Verify health, HTML and initial configuration
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:18080/healthz
+          curl --fail --silent --show-error --retry 20 --retry-all-errors --retry-connrefused --retry-delay 2 --max-time 10 http://127.0.0.1:18080/healthz
           curl --fail --silent --show-error http://127.0.0.1:18080/ -o .smoke-index.html
           grep -qi dashy .smoke-index.html
           docker exec dashy node /app/services/healthcheck.js
@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           docker restart dashy
-          curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:18080/healthz
+          curl --fail --silent --show-error --retry 20 --retry-all-errors --retry-connrefused --retry-delay 2 --max-time 10 http://127.0.0.1:18080/healthz
           docker exec dashy node -e 'const fs=require("fs"),s=fs.readFileSync("/app/user-data/conf.yml","utf8");if(!s.includes("persistence-smoke-marker"))process.exit(1);console.log("Non-root config bootstrap and persistence verified.");'
       - name: Container diagnostics
         if: always()
