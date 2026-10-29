@@ -1,0 +1,18 @@
+package: community.lazycat.app.dashy
+version: 4.9.0
+name: Dashy
+description: A customizable dashboard for organizing links, services and widgets.
+min_os_version: "1.6.0"
+homepage: https://github.com/Lissy93/dashy
+author: Lissy93
+license: MIT
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Dashy
+    description: 可自定义的导航仪表盘，集中整理网址、服务入口和小组件，支持可视化编辑。
+  en:
+    name: Dashy
+    description: A customizable dashboard for organizing links, services and widgets.

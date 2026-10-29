@@ -1,0 +1,30 @@
+application:
+  subdomain: dashy
+  multi_instance: false
+  upstreams:
+    - location: /
+      backend: http://dashy:8080/
+services:
+  dashy:
+    # upstream: ghcr.io/lissy93/dashy:4.9.0
+    image: ghcr.1ms.run/lissy93/dashy:4.9.0
+    run_as: "1000:1000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - TZ=Asia/Shanghai
+    command: >-
+      /bin/sh -c 'if [ ! -s /app/user-data/conf.yml ]; then cp /lzcapp/pkg/content/default-conf.yml /app/user-data/conf.yml; fi; exec node /app/server.js'
+    binds:
+      - /lzcapp/var/user-data:/app/user-data
+    healthcheck:
+      test: ["CMD", "node", "/app/services/healthcheck.js"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+usage: |
+  Dashy 是导航与服务仪表盘。点击页面编辑按钮添加分组、链接和小组件，并保存到服务器。
+  配置和自定义资源保存于 /lzcapp/var/user-data；只有首次运行时才写入默认配置，升级不覆盖已有文件。
+  入口保留懒猫登录保护，不附带文件选择器拦截。多个用户共享本实例的导航配置。
+  使用非 root UID 1000 及持久目录 owner 映射，因此需要懒猫系统 1.6.0 或更高。

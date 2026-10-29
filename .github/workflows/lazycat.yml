@@ -1,0 +1,48 @@
+name: Verify and publish Dashy
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Start pinned upstream as UID 1000 with empty persistent directory
+        run: |
+          set -euo pipefail
+          mkdir -p .smoke-data
+          sudo chown 1000:1000 .smoke-data
+          docker run --detach --name dashy --user 1000:1000 --publish 127.0.0.1:18080:8080 --mount "type=bind,source=$PWD/.smoke-data,target=/app/user-data" --mount "type=bind,source=$PWD/content,target=/lzcapp/pkg/content,readonly" ghcr.io/lissy93/dashy:4.9.0@sha256:e8725dc24acc9a1d6f09c2ed0499b596af5a1b4eac8c83e912c213da06011356 /bin/sh -c 'if [ ! -s /app/user-data/conf.yml ]; then cp /lzcapp/pkg/content/default-conf.yml /app/user-data/conf.yml; fi; exec node /app/server.js'
+      - name: Verify health, HTML and initial configuration
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:18080/healthz
+          curl --fail --silent --show-error http://127.0.0.1:18080/ -o .smoke-index.html
+          grep -qi dashy .smoke-index.html
+          docker exec dashy node /app/services/healthcheck.js
+          docker exec dashy node -e 'const fs=require("fs"),s=fs.readFileSync("/app/user-data/conf.yml","utf8");if(!s.includes("https://dashy.to/docs/"))process.exit(1);fs.appendFileSync("/app/user-data/conf.yml","\n# persistence-smoke-marker\n");'
+      - name: Verify restart preserves modified configuration
+        run: |
+          set -euo pipefail
+          docker restart dashy
+          curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:18080/healthz
+          docker exec dashy node -e 'const fs=require("fs"),s=fs.readFileSync("/app/user-data/conf.yml","utf8");if(!s.includes("persistence-smoke-marker"))process.exit(1);console.log("Non-root config bootstrap and persistence verified.");'
+      - name: Container diagnostics
+        if: always()
+        run: docker logs dashy
+      - name: Remove container
+        if: always()
+        run: docker rm -f dashy
+  lazycat:
+    needs: smoke
+    uses: ca-x/lazycat-github-action/.github/workflows/lazycat.yml@v1
+    with:
+      operation: auto
+      config: .github/lazycat-action.yml
+      versioned-release-asset: true
+    secrets:
+      APPSTORE_URL: ${{ secrets.APPSTORE_URL }}
+      APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
+      PRIVATE_STORE_GROUP_CODES: ${{ secrets.PRIVATE_STORE_GROUP_CODES }}

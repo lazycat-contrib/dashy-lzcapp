@@ -1,0 +1,18 @@
+pageInfo:
+  title: Dashy
+  description: 我的导航仪表盘
+appConfig:
+  theme: colorful
+  layout: auto
+sections:
+  - name: 开始使用
+    icon: fas fa-rocket
+    items:
+      - title: Dashy 文档
+        description: 配置参考与使用说明
+        url: https://dashy.to/docs/
+        target: newtab
+      - title: GitHub 上游
+        description: Lissy93/dashy
+        url: https://github.com/Lissy93/dashy
+        target: newtab
