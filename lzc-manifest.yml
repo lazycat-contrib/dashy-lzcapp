@@ -6,8 +6,8 @@ application:
       backend: http://dashy:8080/
 services:
   dashy:
-    # upstream: ghcr.io/lissy93/dashy:4.9.0
-    image: ghcr.1ms.run/lissy93/dashy:4.9.0
+    # upstream: ghcr.io/lissy93/dashy:4.9.8
+    image: ghcr.1ms.run/lissy93/dashy:4.9.8
     run_as: "1000:1000"
     environment:
       - NODE_ENV=production
